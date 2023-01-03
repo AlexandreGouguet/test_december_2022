@@ -1,0 +1,83 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Hello AbsencePeriodController!{% endblock %}
+
+{% block body %}
+    <style>
+        .loader {
+            border: 8px solid #f3f3f3;
+            border-top: 8px solid #3498db;
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            animation: spin 2s linear infinite;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+    </style>
+    <div>
+        <h1>Absences</h1>
+        <a href="{{ path('absence_period_create') }}">Déclarer une nouvelle absence</a>
+        <h2>Absences par périodes :</h2>
+        <h3>Par mois</h3>
+        <div>
+            <label for="month">Mois</label>
+            <input type="number" id="month" name="month" min="1" max="12" value="{{ 'now' | date('n') }}">
+            <label for="year">Année</label>
+            <input type="number" id="year" name="year" min="0" value="{{ 'now' | date('Y') }}">
+        </div>
+        <button type="button" class="btn btn-primary mt-3" id="monthlyButton">Chercher sur la période</button>
+        <button type="button" class="btn btn-primary mt-3" id="resetFilterButton">Réinitialiser les filtres</button>
+        <h2>Dernières absences déclarées :</h2>
+        <ul id="absenceList">
+            <div class="loader"></div>
+        </ul>
+    </div>
+    <script type="text/javascript">
+        /**
+         * Get json result and display it in an element list
+         * @param jsonResult
+         */
+        function displayAbsenceList(jsonResult) {
+            document.getElementById('absenceList').innerHTML = '';
+            for (let i = 0; i < jsonResult.length; i++) {
+                let li = document.createElement('li');
+                const startTime = new Date(jsonResult[i].startTime.timestamp * 1000)
+                const endTime = new Date(jsonResult[i].endTime.timestamp * 1000)
+                li.textContent = startTime.toLocaleDateString() + ' au ' + endTime.toLocaleDateString();
+                document.getElementById('absenceList').appendChild(li);
+            }
+        }
+
+        // Initial request to get last absences
+        const request = new XMLHttpRequest();
+        request.open("GET", "/absence/filter");
+        request.onload = function () {
+            displayAbsenceList(JSON.parse(request.response));
+        };
+        request.send();
+
+        // Event on search by month button
+        document.getElementById('monthlyButton').addEventListener('click', function () {
+            let month = document.getElementById('month').value;
+            let year = document.getElementById('year').value;
+            request.open("GET", "/absence/filter?month=" + month + "&year=" + year);
+            request.send();
+        });
+
+        // Event on reset filter button
+        document.getElementById('resetFilterButton').addEventListener('click', function () {
+            request.open("GET", "/absence/filter");
+            request.send();
+        });
+    </script>
+{% endblock %}
+
+

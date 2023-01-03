@@ -1,0 +1,12 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Homepage{% endblock %}
+
+{% block body %}
+    <div>
+        <h1>Votre solution RH</h1>
+        <a href="{{ path('absence_period') }}">
+            <button type="button" class="btn btn-primary">Liste des abscences</button>
+        </a>
+    </div>
+{% endblock %}
