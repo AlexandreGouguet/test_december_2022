@@ -5,7 +5,7 @@ docker-compose up -d --build
 
 Une fois fait, il faut faire les commandes suivantes depuis le conteneur php :
 composer install
-php bin/console d:m:m
+php bin/console doctrine:migration:migrate
 
 Soit via les commandes :
 docker exec -it php bash
